@@ -30,15 +30,15 @@ class CMiniMP3AudioStream final : public IAudioStream
 public:
 	CMiniMP3AudioStream( IAudioStreamEvent *pEventHandler );
 
-	int				Decode( void *pBuffer, unsigned int uBufferSize ) OVERRIDE;
+	int				Decode( void *pBuffer, unsigned int uBufferSize ) override;
 
-	int				GetOutputBits() OVERRIDE;
-	int				GetOutputRate() OVERRIDE;
-	int				GetOutputChannels() OVERRIDE;
+	int				GetOutputBits() override;
+	int				GetOutputRate() override;
+	int				GetOutputChannels() override;
 
-	unsigned int	GetPosition() OVERRIDE;
+	unsigned int	GetPosition() override;
 
-	void			SetPosition( unsigned int uPosition ) OVERRIDE;
+	void			SetPosition( unsigned int uPosition ) override;
 
 private:
 
@@ -246,12 +246,12 @@ unsigned int CMiniMP3AudioStream::GetTotalChunkSizes() const
 class CVAudioMiniMP3 final : public IVAudio
 {
 public:
-	IAudioStream*	CreateMP3StreamDecoder ( IAudioStreamEvent *pEventHandler ) OVERRIDE;
-	void			DestroyMP3StreamDecoder( IAudioStream *pDecoder ) OVERRIDE;
+	IAudioStream*	CreateMP3StreamDecoder ( IAudioStreamEvent *pEventHandler ) override;
+	void			DestroyMP3StreamDecoder( IAudioStream *pDecoder ) override;
 
 #ifdef GAME_DESOLATION
-	void*			CreateMilesAudioEngine() OVERRIDE;
-	void			DestroyMilesAudioEngine( void *pEngine ) OVERRIDE;
+	void*			CreateMilesAudioEngine() override;
+	void			DestroyMilesAudioEngine( void *pEngine ) override;
 #endif
 
 	static CVAudioMiniMP3& GetInstance() { return s_VAudio; }
