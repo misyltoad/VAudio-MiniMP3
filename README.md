@@ -6,6 +6,8 @@ It uses [MiniMP3](https://github.com/lieff/minimp3) for playback of sound files 
 
 It can be built for any branch of the Source Engine, including the standard public Source 2007, Source 2013 and Alien Swarm SDKs without any changes.
 
+VAudio MiniMP3 supports regular MP3 playback as well as streaming MP3 playback.
+
 ## Why?
 
 The current solution, VAudio Miles, uses Miles (duh!) and can be quite problematic on modern systems as it creates writable + executable pages, which makes it fail to work on systems utilising SELinux.
