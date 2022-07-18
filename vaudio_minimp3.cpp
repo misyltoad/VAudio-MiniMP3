@@ -230,6 +230,8 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 
 			// If we did hit EOF, break out here, cause we don't need
 			// to get the next chunk if there is one left to get.
+			// It's okay if it never gets data, as m_nChunkSize[3] is set to 0
+			// when we move the chunks back.
 			if ( bEOF )
 			{
 				m_nEOFPosition = m_uDataPosition;
