@@ -213,6 +213,7 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 		m_nChunkSize[2] = 0;
 		m_nChunkSize[3] = 0;
 
+		// Move our frame position back by two chunks
 		m_uFramePosition -= 2 * kChunkSize;
 
 		// Grab a new Chunk 2 + 3
