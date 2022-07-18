@@ -81,7 +81,7 @@ private:
 	IAudioStreamEvent*		m_pEventHandler;
 
 	// Buffers for the current frames.
-	// See comments describing thie chunk size relationship at
+	// See comments describing the chunk size relationship at
 	// the definition of kChunkSize and kChunkCount.
 	union
 	{
