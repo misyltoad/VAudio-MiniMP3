@@ -221,18 +221,19 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 			const int nChunkIdx = 2 + i;
 			m_nChunkSize[nChunkIdx] = m_pEventHandler->StreamRequestData( &m_Frames.m_Chunks[ nChunkIdx ], kChunkSize, m_uDataPosition );
 
+			m_uDataPosition += m_nChunkSize[nChunkIdx];
+
 			// Check if we hit EOF (ie. chunk size != max) and mark the EOF position
 			// so we know when to stop playing.
 			const bool bEOF = m_nChunkSize[nChunkIdx] != kChunkSize;
-			if ( bEOF )
-				m_nEOFPosition = m_uDataPosition + m_nChunkSize[nChunkIdx];
-
-			m_uDataPosition += m_nChunkSize[nChunkIdx];
 
 			// If we did hit EOF, break out here, cause we don't need
 			// to get the next chunk if there is one left to get.
 			if ( bEOF )
+			{
+				m_nEOFPosition = m_uDataPosition;
 				break;
+			}
 		}
 	}
 
