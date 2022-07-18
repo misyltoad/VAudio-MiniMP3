@@ -167,7 +167,7 @@ void CMiniMP3AudioStream::UpdateStreamInfo( bool bParse )
 {
 	// Pre-fill all frames.
 	for ( int i = 0; i < kChunkCount; i++ )
-		m_nChunkSize[i] = m_pEventHandler->StreamRequestData(&m_Frames.m_Chunks[i], kChunkSize, m_uDataPosition + ( kChunkSize * i ));
+		m_nChunkSize[i] = m_pEventHandler->StreamRequestData( &m_Frames.m_Chunks[i], kChunkSize, m_uDataPosition + ( kChunkSize * i ) );
 
 	if ( bParse )
 		mp3dec_decode_frame( &m_Decoder, m_Frames.m_FullFrame, GetTotalChunkSizes(), nullptr, &m_Info );
