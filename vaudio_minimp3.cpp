@@ -80,7 +80,7 @@ CMiniMP3AudioStream::CMiniMP3AudioStream( IAudioStreamEvent *pEventHandler )
 	mp3dec_init( &m_Decoder );
 
 	memset( &m_Info, 0, sizeof( m_Info ) );
-	memset( &m_Frames, 0, sizeof( &m_Frames ) );
+	memset( &m_Frames, 0, sizeof( m_Frames ) );
 	
 	UpdateStreamInfo( true );
 }
