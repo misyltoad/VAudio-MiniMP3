@@ -201,6 +201,7 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 	//
 	// This part of the code assumes the chunk count to be 4, so if you change that,
 	// check here. You shouldn't need more than 4 4KB chunks making 16KB though...
+	COMPILE_TIME_ASSERT( kChunkCount == 4 );
 	while ( m_uFramePosition >= 2 * kChunkSize )
 	{
 		// Chunk 0 <- Chunk 2
