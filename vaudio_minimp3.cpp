@@ -294,15 +294,6 @@ void CVAudioMiniMP3::DestroyMP3StreamDecoder( IAudioStream *pDecoder )
 }
 
 
-CVAudioMiniMP3 &CVAudioMiniMP3::GetInstance()
-{
-	// We must allocate this as some Source Engine versions attempt
-	// to delete the vaudio pointer on shutdown.
-	static CVAudioMiniMP3 *s_pVAudio = new CVAudioMiniMP3;
-	return *s_pVAudio;
-}
-
-
 #ifdef GAME_DESOLATION
 void *CVAudioMiniMP3::CreateMilesAudioEngine()
 {
@@ -314,6 +305,15 @@ void CVAudioMiniMP3::DestroyMilesAudioEngine( [[maybe_unused]] void *pEngine )
 	// This function is never called because CreateMilesAudioEngine returns nullptr
 }
 #endif
+
+
+CVAudioMiniMP3 &CVAudioMiniMP3::GetInstance()
+{
+	// We must allocate this as some Source Engine versions attempt
+	// to delete the vaudio pointer on shutdown.
+	static CVAudioMiniMP3 *s_pVAudio = new CVAudioMiniMP3;
+	return *s_pVAudio;
+}
 
 
 //-----------------------------------------------------------------------------
