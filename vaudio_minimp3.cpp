@@ -278,10 +278,7 @@ public:
 	void			DestroyMilesAudioEngine( void *pEngine ) override;
 #endif
 
-	static CVAudioMiniMP3 &GetInstance() { return s_VAudio; }
-
-private:
-	static CVAudioMiniMP3 s_VAudio;
+	static CVAudioMiniMP3 &GetInstance();
 };
 
 
@@ -290,9 +287,19 @@ IAudioStream *CVAudioMiniMP3::CreateMP3StreamDecoder( IAudioStreamEvent *pEventH
 	return new CMiniMP3AudioStream( pEventHandler );
 }
 
+
 void CVAudioMiniMP3::DestroyMP3StreamDecoder( IAudioStream *pDecoder )
 {
 	delete static_cast< CMiniMP3AudioStream * >( pDecoder );
+}
+
+
+CVAudioMiniMP3 &CVAudioMiniMP3::GetInstance()
+{
+	// We must allocate this as some Source Engine versions attempt
+	// to delete the vaudio pointer on shutdown.
+	static CVAudioMiniMP3 *s_pVAudio = new CVAudioMiniMP3;
+	return *s_pVAudio;
 }
 
 
@@ -312,9 +319,6 @@ void CVAudioMiniMP3::DestroyMilesAudioEngine( [[maybe_unused]] void *pEngine )
 //-----------------------------------------------------------------------------
 // Interface
 //-----------------------------------------------------------------------------
-
-// Singleton instance for CVAudioMiniMP3
-CVAudioMiniMP3 CVAudioMiniMP3::s_VAudio;
 
 // In Desolation, we build all vaudio components inside of the engine.
 #ifdef ENGINE_DLL
