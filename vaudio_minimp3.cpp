@@ -25,7 +25,7 @@ static const int kChunkCount   = 4;
 //-----------------------------------------------------------------------------
 // Implementation of IAudioStream
 //-----------------------------------------------------------------------------
-class CMiniMP3AudioStream : public IAudioStream
+class CMiniMP3AudioStream final : public IAudioStream
 {
 public:
 	CMiniMP3AudioStream( IAudioStreamEvent *pEventHandler );
@@ -243,7 +243,7 @@ unsigned int CMiniMP3AudioStream::GetTotalChunkSizes() const
 //-----------------------------------------------------------------------------
 // Implementation of IVAudio
 //-----------------------------------------------------------------------------
-class CVAudioMiniMP3 : public IVAudio
+class CVAudioMiniMP3 final : public IVAudio
 {
 public:
 	IAudioStream*	CreateMP3StreamDecoder ( IAudioStreamEvent *pEventHandler ) OVERRIDE;
