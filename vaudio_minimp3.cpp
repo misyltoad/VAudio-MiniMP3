@@ -268,7 +268,7 @@ IAudioStream *CVAudioMiniMP3::CreateMP3StreamDecoder( IAudioStreamEvent *pEventH
 
 void CVAudioMiniMP3::DestroyMP3StreamDecoder( IAudioStream *pDecoder )
 {
-	delete pDecoder;
+	delete static_cast< CMiniMP3AudioStream * >( pDecoder );
 }
 
 
