@@ -194,7 +194,6 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 		m_uFramePosition -= 2 * kChunkSize;
 
 		// Grab a new Chunk 2 + 3
-		int nDataSize = 0;
 		for ( int i = 0; i < 2; i++ )
 		{
 			const int nChunkIdx = 2 + i;
@@ -207,7 +206,6 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 				m_nEOFPosition = m_uDataPosition + m_nChunkSize[nChunkIdx];
 
 			m_uDataPosition += m_nChunkSize[nChunkIdx];
-			nDataSize		+= m_nChunkSize[nChunkIdx];
 
 			// If we did hit EOF, break out here, cause we don't need
 			// to get the next chunk if there is one left to get.
