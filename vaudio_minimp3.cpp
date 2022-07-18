@@ -19,7 +19,16 @@
 #define MINIMP3_IMPLEMENTATION
 #include "minimp3.h"
 
+// Each chunk is 4096 bytes because that is the size of AUDIOSOURCE_COPYBUF_SIZE
+// which is used when streaming in CWaveDataStreamAsync::ReadSourceData
+// and going above it's gives us garbage data back.
 static const int kChunkSize    = 4096;
+// 4 chunks of 4KB to make 16KB, or at least 10 frames.
+// The buffer we are always called to fill is always 16KB,
+// so this will ensure we will always saturate that buffer unless
+// we reach the EOF even in the case we need to re-sync if we
+// somehow got misaligned, our position got force set and there was garbage
+// data in the stream, etc.
 static const int kChunkCount   = 4;
 
 //-----------------------------------------------------------------------------
@@ -51,17 +60,29 @@ private:
 	mp3dec_t				m_Decoder;
 	mp3dec_frame_info_t		m_Info;
 
-	// Position in the buffer in bytes
+	// Diagram of how the chunk system below fits into
+	// a mp3 data stream.
+	// The 'frame' cursor is local to the chunks.
+	// The 'data' cursor is how far along we are in picking
+	// up chunks.
+	//----------------------------------------------------
+	//      | chunk 1 | chunk 2 | chunk 3 | chunk 4 |
+	//----------------------------------------------------
+	//              ^                               ^
+	//            frame                           data
+
+	// Position of the 'data' cursor, used to fill
+	// m_Frames.
 	unsigned int 			m_uDataPosition = 0;
+	// Position of the 'frame' cursor, inside of
+	// m_Frames.
 	unsigned int			m_uFramePosition = 0;
 
 	IAudioStreamEvent*		m_pEventHandler;
 
-	// Buffer for the current frame.
-	// Worst case for an MP3 frame is ~2kb
-	//
-	// Let's call this 16kb for 10 samples, so if we get misaligned
-	// we can still find the next sample.
+	// Buffers for the current frames.
+	// See comments describing thie chunk size relationship at
+	// the definition of kChunkSize and kChunkCount.
 	union
 	{
 		uint8_t				m_FullFrame	[kChunkSize * kChunkCount];
