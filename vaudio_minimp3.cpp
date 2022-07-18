@@ -278,7 +278,7 @@ public:
 	void			DestroyMilesAudioEngine( void *pEngine ) override;
 #endif
 
-	static CVAudioMiniMP3& GetInstance() { return s_VAudio; }
+	static CVAudioMiniMP3 &GetInstance() { return s_VAudio; }
 
 private:
 	static CVAudioMiniMP3 s_VAudio;
