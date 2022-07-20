@@ -51,7 +51,10 @@ public:
 
 private:
 
-	void			UpdateStreamInfo( bool bParse );
+	void			UpdateStreamInfo();
+	// Returns true if it hit EOF
+	bool 			StreamChunk( int nChunkIdx );
+	// Returns number of samples
 	int				DecodeFrame( void *pBuffer );
 
 	unsigned int	SamplesToBytes( int nSamples ) const;
@@ -103,7 +106,7 @@ CMiniMP3AudioStream::CMiniMP3AudioStream( IAudioStreamEvent *pEventHandler )
 	memset( &m_Info, 0, sizeof( m_Info ) );
 	memset( &m_Frames, 0, sizeof( m_Frames ) );
 	
-	UpdateStreamInfo( true );
+	UpdateStreamInfo();
 }
 
 
@@ -180,18 +183,38 @@ void CMiniMP3AudioStream::SetPosition( unsigned int uPosition )
 	m_uDataPosition = uPosition;
 	m_uFramePosition = 0;
 
-	UpdateStreamInfo( false );
+	UpdateStreamInfo();
 }
 
 
-void CMiniMP3AudioStream::UpdateStreamInfo( bool bParse )
+void CMiniMP3AudioStream::UpdateStreamInfo()
 {
 	// Pre-fill all frames.
 	for ( int i = 0; i < kChunkCount; i++ )
-		m_nChunkSize[i] = m_pEventHandler->StreamRequestData( &m_Frames.m_Chunks[i], kChunkSize, m_uDataPosition + ( kChunkSize * i ) );
+	{
+		const bool bEOF = StreamChunk( i );
+		if ( bEOF )
+		{
+			m_nEOFPosition = m_uDataPosition;
+			break;
+		}
+	}
 
-	if ( bParse )
-		mp3dec_decode_frame( &m_Decoder, m_Frames.m_FullFrame, GetTotalChunkSizes(), nullptr, &m_Info );
+	// Decode a frame to get the latest info, maybe we transitioned from
+	// stereo <-> mono, etc.
+	mp3dec_decode_frame( &m_Decoder, &m_Frames.m_FullFrame[ m_uFramePosition ], GetTotalChunkSizes() - m_uFramePosition, nullptr, &m_Info );
+}
+
+
+bool CMiniMP3AudioStream::StreamChunk( int nChunkIdx )
+{
+	m_nChunkSize[nChunkIdx] = m_pEventHandler->StreamRequestData( &m_Frames.m_Chunks[ nChunkIdx ], kChunkSize, m_uDataPosition );
+
+	m_uDataPosition += m_nChunkSize[nChunkIdx];
+
+	// Check if we hit EOF (ie. chunk size != max) and mark the EOF position
+	// so we know when to stop playing.
+	return m_nChunkSize[nChunkIdx] != kChunkSize;
 }
 
 
@@ -202,7 +225,7 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 	// This part of the code assumes the chunk count to be 4, so if you change that,
 	// check here. You shouldn't need more than 4 4KB chunks making 16KB though...
 	COMPILE_TIME_ASSERT( kChunkCount == 4 );
-	while ( m_uFramePosition >= 2 * kChunkSize )
+	while ( m_uFramePosition >= 2 * kChunkSize && m_uDataPosition < m_nEOFPosition )
 	{
 		// Chunk 0 <- Chunk 2
 		// Chunk 1 <- Chunk 3
@@ -220,13 +243,9 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 		for ( int i = 0; i < 2; i++ )
 		{
 			const int nChunkIdx = 2 + i;
-			m_nChunkSize[nChunkIdx] = m_pEventHandler->StreamRequestData( &m_Frames.m_Chunks[ nChunkIdx ], kChunkSize, m_uDataPosition );
 
-			m_uDataPosition += m_nChunkSize[nChunkIdx];
-
-			// Check if we hit EOF (ie. chunk size != max) and mark the EOF position
-			// so we know when to stop playing.
-			const bool bEOF = m_nChunkSize[nChunkIdx] != kChunkSize;
+			// StreamChunk returns if we hit EOF.
+			const bool bEOF = StreamChunk( nChunkIdx );
 
 			// If we did hit EOF, break out here, cause we don't need
 			// to get the next chunk if there is one left to get.
