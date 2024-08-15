@@ -1683,7 +1683,7 @@ static int hdr_is_tag( const uint8_t *hdr )
 
 static int hdr_is_null( const uint8_t *hdr )
 {
-    return hdr[0] == '\0' || hdr[1] == '\0' || hdr[2] == '\0' || hdr[3] == '\0';
+    return hdr[0] == '\0' && hdr[1] == '\0' && hdr[2] == '\0' && hdr[3] == '\0';
 }
 
 static int hdr_is_null_or_tag( const uint8_t *hdr )
